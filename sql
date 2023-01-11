@@ -1,1 +1,93 @@
+use database new;
+--1. Load the given dataset into snowflake with a primary key to Order Date column.
+create or replace table sales_data
+(order_id varchar(50),
+ order_date varchar(50),
+ ship_date varchar(50),
+ ship_mode varchar(50),
+ customer_name varchar(50),
+ segment varchar(50),
+ state char(50) primary key,
+ country char(50),
+ market varchar(50),
+ region varchar(50),
+ product_id varchar(100),
+ category char(50),
+ sub_category varchar(50),
+ product_name varchar(150),
+ sales varchar(50),
+ quantity int,
+ discount float,
+ profit float,
+ shipping_cost float,
+ order_priority varchar(50),
+ year varchar(50));
+ select * from sales_data;
+ describe table sales_data;
+ --2. change primary key to order id
+ alter table sales_data
+ drop primary key;
+ alter table sales_data
+ add primary key(order_id);
+ describe table sales_data;
 
+--3. Check the data type for Order date and Ship date and mention in what data type it should be?
+describe table sales_data;
+ alter table sales_data
+ add column order_date_new date;
+ update sales_data set order_date_new = order_date;
+ alter table sales_data
+ add column ship_date_new date;
+ update sales_data set ship_date_new = ship_date;
+ 
+ 
+ 
+ --4. Create a new column called order_extract and extract the number after the last‘–‘from Order ID column.
+
+alter table sales_data
+ add column order_extract varchar(50);
+ update sales_data set order_extract = substring(order_id,9);
+/*5. Create a new column called Discount Flag and categorize it based on discount.
+    Use ‘Yes’ if the discount is greater than zero else ‘No’.*/
+
+select distinct discount from sales_data;
+ select *,
+  case 
+       when discount  > 0 then 'yes'
+       else 'no'
+       end as discount_is_this
+       from sales_data;
+/*6. Create a new column called process days and calculate how many days it takes
+for each order id to process from the order to its shipment.*/
+       
+alter table sales_data
+add column process_days varchar(25);
+update sales_data set process_days = datediff('day', order_date,ship_date);
+/* 7. Create a new column called Rating and then based on the Process dates give rating.*/
+
+alter table sales_data
+add column rating int;
+update sales_data
+set rating = 5 where process_days <= 3;
+update sales_data
+set rating = 4 where process_days > 3 and process_days <= 6;
+update sales_data
+set rating = 3 where process_days > 6 and process_days <= 10;
+update sales_data
+set rating = 2 where process_days > 10;
+         
+           
+      
+ 
+
+ 
+ 
+ 
+
+
+ 
+ 
+ 
+ 
+ 
+ 
